@@ -163,7 +163,7 @@ print(pred)
 ```
 3. Perform experiments with different datasets, varying the features/columns, and assess accuracy using cross-validation for comparison.
 
-```
+```python
 total_dataset = 10000
 input_data1 = []
 input_data2 = []
