@@ -22,11 +22,11 @@ output_data = []
 
 for i in range(total_dataset):
   age = random.randint(12, 19)
-  # gender = random.randint(1, 2)
+  gender = random.randint(1, 2)
   average = random.randint(1, 10)
   eventType = random.randint(1, 6)
   hrsReq = random.randint(1, 15)
-  # race = random.randint(1, 5)
+  race = random.randint(1, 5)
   science = random.randint(1, 2)
   compSci = random.randint(1, 2)
   writing = random.randint(1, 2)
