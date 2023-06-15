@@ -1,28 +1,375 @@
 
 # Machine-Learning-scikit-learn-with-Research-Experiments-Example
-
-## Dummy Data
+## Example 1: Level of performace of the Volunteer Opportunity 
+The specific objective in this example is to predict the performance level required for individuals to participate in the Volunteer Opportunity.
+### Dummy Data
 1. Identify the problem domain for machine learning (ML) application.
+   - To identify the problem domain for an ML application focused onperformance in the Volunteer Opportunity, follow these steps:
+      - Define the goals and objectives of the ML application in relation to performance in volunteer opportunities.
+      - Gather relevant data related to volunteer performance, such as volunteer profiles, activities, and outcomes.
+      - Determine relevant input features: age, gender, average, eventType, time, race and major/subject.
 2. Formulate the dataset structure, including input features and the target result to predict.
+    - For the first dataset,
+      - input: gender (female/male), average(1-10), age (12-19), event type(1-6), science(yes/no), computer Science(yes/no), writing(yes/no), public Speaking, math(yes/no), engineering(yes/no)
+      - output: performace (1-10)
+    - For the second dataset
+      - input: age (12-19), event type(1-6), science(yes/no), computer Science(yes/no), writing(yes/no), public Speaking, math(yes/no), engineering(yes/no)
+      - output: performace (1-10)
 3. Generate dummy data to simulate real-world scenarios.
+```python
+input_data = []
+output_data = []
 
-### Dummy Data Generation Tips
+for i in range(total_dataset):
+  age = random.randint(12, 19)
+  # gender = random.randint(1, 2)
+  average = random.randint(1, 10)
+  eventType = random.randint(1, 6)
+  hrsReq = random.randint(1, 15)
+  # race = random.randint(1, 5)
+  science = random.randint(1, 2)
+  compSci = random.randint(1, 2)
+  writing = random.randint(1, 2)
+  publicSpeaking = random.randint(1, 2)
+  math = random.randint(1, 2)
+  engineering = random.randint(1, 2)
+
+  # First dataset
+  # input_data.append([age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering])
+  # Second Dataset
+  input_data.append([age, eventType, science, compSci, writing, publicSpeaking, math, engineering])
+
+  # Define the minimum performance value for the specific type of volunteer which depends on the age, major/subject, event type and time.
+  min_per = 1
+  min_per = average + random.randint(-2, 2)
+  if age > 15:
+    min_per += age - 15
+  if science + compSci + writing + math + publicSpeaking + engineering >= 10:
+    min_per += 3
+  
+  if eventType == 1 and science == 2:
+    min_per += 1
+
+  if eventType == 2 and compSci == 2:
+    min_per += 1
+
+  if eventType == 3 and writing == 2:
+    min_per += 1
+  
+  if eventType == 4 and publicSpeaking == 2:
+    min_per += 1
+  
+  if eventType == 5 and math == 2:
+    min_per += 1
+  
+  if eventType == 6 and engineering == 2:
+    min_per += 1
+
+  if min_per > 10:
+    min_per = 9
+  
+  '''
+  if hrsReq > 10:
+    min_per -= random.randint(0, 1)
+
+  if hrsReq > 5:
+    min_per -= random.randint(0, 1)
+'''
+
+  performance = random.randint(min_per, 10)
+  if performance == 0:
+    performance = 1
+
+  # print(age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
+  # print(age, eventType, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
+
+  output_data.append(performance)
+```
+#### Dummy Data Generation Tips
 
 - Complete randomness is not suitable for generating data in ML because the model cannot learn from it effectively.
 - It is important to control the random generation process based on the expected rules. For example, if you believe that feature X will positively impact the result Z, you should generate a dataset that adheres to that rule.
 
-## Train & Prediction
+### Train & Prediction
 1. Train the ML model using the prepared dataset.
 2. Perform predictions using the trained model on new data.
+``` python
+# Train the model
+X_train, X_test, y_train, y_test = train_test_split(input_data, output_data, test_size=0.2, random_state=0)
 
-## Experiments
+model = linear_model.LinearRegression()
+model.fit(X_train, y_train)
+print(f"{model.score(X_test, y_test)}")
+
+# Do Prediction
+# [age, eventType, science, compSci, writing, publicSpeaking, math, engineering]
+test_data = [15,4,1,1,2,2,1,2]
+pred = model.predict([test_data])
+print(pred)
+
+```
+
+### Experiments
 1. Experiment with 2-3 other ML algorithms and compare their accuracy using cross-validation techniques.
+```python
+   
+  X_train, X_test, y_train, y_test = train_test_split(input_data, output_data, test_size=0.2, random_state=0)
+  
+  model = linear_model.LinearRegression()
+  model.fit(X_train, y_train)
+  print('Res:', model.score(X_test, y_test))
+  
+  model3 = svm.SVC()
+  model3.fit(X_train, y_train)
+  print(f"{model3.score(X_test, y_test)}")
+  
+  model4 = RandomForestClassifier(n_estimators=30, max_depth=30)
+  model4.fit(X_train, y_train)
+  print(f"{model4.score(X_test, y_test)}")
+
+```
 2. Conduct experiments using the chosen ML algorithm but with different parameters or configurations, comparing accuracy through cross-validation.
+```python
+  #kernel parameters selects the type of hyperplane used to separate the data. Using 'linear' will use a linear hyperplane (a line in the case of 2D data).        #'rbf' and 'poly' uses a non linear hyper-plane
+  # kernels = ['linear', 'rbf', 'poly']
+  for kernel in kernels:
+    svc = svm.SVC(kernel=kernel)
+    svc.fit(X_train, y_train)
+    print(f"{kernel}: {svc.score(X_test, y_test)}")
+  
+  # gamma is a parameter for non linear hyperplanes. The higher the gamma value it tries to exactly fit the training data set
+  gammas = [0.1, 1, 10, 100]
+  for gamma in gammas:
+    svc = svm.SVC(kernel='rbf', gamma=gamma)
+    svc.fit(X_train, y_train)
+    print(f"{gamma}: {svc.score(X_test, y_test)}")
+  
+  #C is the penalty parameter of the error term. It controls the trade off between smooth decision boundary and classifying
+  #the training points correctly.
+  cs = [0.1, 1, 10, 100, 1000]
+  for c in cs:
+    svc = svm.SVC(kernel='rbf', C=c)
+    svc.fit(X_train, y_train)
+    print(f"{c}: {svc.score(X_test, y_test)}")
+    
+  #degree is a parameter used when kernel is set to ‘poly’. It’s basically the degree of the polynomial used 
+  #to find the hyperplane to split the data.
+  degrees = [0, 1, 2, 3, 4, 5, 6]
+  for degree in degrees:
+    svc = svm.SVC(kernel='poly', degree=degree)
+    svc.fit(X_train, y_train)
+    print(f"{degree}: {svc.score(X_test, y_test)}")
+
+```
 3. Perform experiments with different datasets, varying the features/columns, and assess accuracy using cross-validation for comparison.
 
+```
+total_dataset = 10000
+input_data1 = []
+input_data2 = []
+output_data1 = []
+output_data2 = []
+
+for i in range(total_dataset):
+  age = random.randint(12, 19)
+  # gender = random.randint(1, 2)
+  average = random.randint(1, 10)
+  eventType = random.randint(1, 6)
+  hrsReq = random.randint(1, 15)
+  # race = random.randint(1, 5)
+  science = random.randint(1, 2)
+  compSci = random.randint(1, 2)
+  writing = random.randint(1, 2)
+  publicSpeaking = random.randint(1, 2)
+  math = random.randint(1, 2)
+  engineering = random.randint(1, 2)
+  # finish hex
+  input_data1.append([age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering])
+  input_data2.append([age, eventType, science, compSci, writing, publicSpeaking, math, engineering])
+
+  min_per = 1
+  min_per = average + random.randint(-2, 2)
+  if age > 15:
+    min_per += age - 15
+  if science + compSci + writing + math + publicSpeaking + engineering >= 10:
+    min_per += 3
+  
+  if eventType == 1 and science == 2:
+    min_per += 1
+
+  if eventType == 2 and compSci == 2:
+    min_per += 1
+
+  if eventType == 3 and writing == 2:
+    min_per += 1
+  
+  if eventType == 4 and publicSpeaking == 2:
+    min_per += 1
+  
+  if eventType == 5 and math == 2:
+    min_per += 1
+  
+  if eventType == 6 and engineering == 2:
+    min_per += 1
+
+  if min_per > 10:
+    min_per = 9
+
+  performance = random.randint(min_per, 10)
+  if performance == 0:
+    performance = 1
+
+  output_data2.append(performance)
+ 
+  if hrsReq > 10:
+    min_per -= random.randint(0, 1)
+
+  if hrsReq > 5:
+    min_per -= random.randint(0, 1)
 
 
-## Example 1: Prediction of Covid Risk based on Location and Activity
+  performance = random.randint(min_per, 10)
+  if performance == 0:
+    performance = 1
+
+  output_data1.append(performance)
+
+
+X_train, X_test, y_train, y_test = train_test_split(input_data1, output_data1, test_size=0.2, random_state=0)
+model1 = svm.SVC()
+model1.fit(X_train, y_train)
+print(f"{model.score(X_test, y_test)}")
+
+X_train, X_test, y_train, y_test = train_test_split(input_data2, output_data2, test_size=0.2, random_state=0)
+model2 = svm.SVC()
+model2.fit(X_train, y_train)
+print(f"{model.score(X_test, y_test)}")
+```
+### Source Code
+```python
+from sklearn import svm
+from sklearn import linear_model
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.datasets import load_iris
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import BaggingClassifier
+import random
+
+# 1. Focus on classification
+# 2. Identify 5 different popular classication models
+#  - Experiment 1: Acc using different models
+#  - Experiment 2: Acc using different feature set
+#  - Experiment 3: Acc using different model parameters
+#  - Experiment 4: Acc using different training data sizes
+
+
+total_dataset = 10000
+input_data = []
+output_data = []
+
+for i in range(total_dataset):
+  age = random.randint(12, 19)
+  # gender = random.randint(1, 2)
+  average = random.randint(1, 10)
+  eventType = random.randint(1, 6)
+  hrsReq = random.randint(1, 15)
+  # race = random.randint(1, 5)
+  science = random.randint(1, 2)
+  compSci = random.randint(1, 2)
+  writing = random.randint(1, 2)
+  publicSpeaking = random.randint(1, 2)
+  math = random.randint(1, 2)
+  engineering = random.randint(1, 2)
+  # finish hex
+  # input_data.append([age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering])
+  input_data.append([age, eventType, science, compSci, writing, publicSpeaking, math, engineering])
+
+  min_per = 1
+  min_per = average + random.randint(-2, 2)
+  if age > 15:
+    min_per += age - 15
+  if science + compSci + writing + math + publicSpeaking + engineering >= 10:
+    min_per += 3
+  
+  if eventType == 1 and science == 2:
+    min_per += 1
+
+  if eventType == 2 and compSci == 2:
+    min_per += 1
+
+  if eventType == 3 and writing == 2:
+    min_per += 1
+  
+  if eventType == 4 and publicSpeaking == 2:
+    min_per += 1
+  
+  if eventType == 5 and math == 2:
+    min_per += 1
+  
+  if eventType == 6 and engineering == 2:
+    min_per += 1
+
+  if min_per > 10:
+    min_per = 9
+    '''
+  if hrsReq > 10:
+    min_per -= random.randint(0, 1)
+
+  if hrsReq > 5:
+    min_per -= random.randint(0, 1)
+'''
+
+  performance = random.randint(min_per, 10)
+  if performance == 0:
+    performance = 1
+
+  # print(age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
+  # print(age, eventType, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
+
+  output_data.append(performance)
+
+
+X_train, X_test, y_train, y_test = train_test_split(input_data, output_data, test_size=0.2, random_state=0)
+
+model = linear_model.LinearRegression()
+model.fit(X_train, y_train)
+print(f"{model.score(X_test, y_test)}")
+
+model2 = make_pipeline(PolynomialFeatures(2), Ridge())
+model2.fit(X_train, y_train)
+print(f"{model2.score(X_test, y_test)}")
+
+
+model3 = svm.SVC()
+model3.fit(X_train, y_train)
+print(f"")
+
+
+model4 = RandomForestClassifier(n_estimators=30, max_depth=30)
+model4.fit(X_train, y_train)
+print(f"{model4.score(X_test, y_test)}")
+
+
+model5 = KNeighborsClassifier(n_neighbors=3)
+model5.fit(X_train, y_train)
+print(f"{model5.score(X_test, y_test)}")
+
+model6 = GaussianNB()
+model6.fit(X_train, y_train)
+print(f"{model6.score(X_test, y_test)}")
+
+
+model7 = BaggingClassifier(RandomForestClassifier(), max_samples=0.5, max_features=0.5)
+model7.fit(X_train, y_train)
+print(f"{model7.score(X_test, y_test)}")
+```
+## Example 2: Prediction of Covid Risk based on Location and Activity
+For this particular example, the goal is to predict the risk of Covid based on location and activity.
 
 ```python
 # https://scikit-learn.org/stable/
@@ -267,7 +614,7 @@ print('Res:', model2.score(X_test3, y_test3))
 ```
 
 
-## Example 2: Prediction of Vocabulary Learning Pattern
+## Example 3: Prediction of Vocabulary Learning Pattern
 
 ```python
 from sklearn import svm
@@ -817,130 +1164,6 @@ def generateDummyData(name):
 ```
 
 
-## Example 3: Recommend the Volunteer Opportunity 
-
-```python
-from sklearn import svm
-from sklearn import linear_model
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import BaggingClassifier
-import random
-
-# 1. Focus on classification
-# 2. Identify 5 different popular classition models
-#  - Experiment 1: Acc using different modesl
-#  - Experiment 2: Acc using different feature set
-#  - Experiment 3: Acc using different model parameters
-#  - Experiment 4: Acc using different training data sizes
-
-
-total_dataset = 10000
-input_data = []
-output_data = []
-
-for i in range(total_dataset):
-  age = random.randint(12, 19)
-  # gender = random.randint(1, 2)
-  average = random.randint(1, 10)
-  eventType = random.randint(1, 6)
-  hrsReq = random.randint(1, 15)
-  # race = random.randint(1, 5)
-  science = random.randint(1, 2)
-  compSci = random.randint(1, 2)
-  writing = random.randint(1, 2)
-  publicSpeaking = random.randint(1, 2)
-  math = random.randint(1, 2)
-  engineering = random.randint(1, 2)
-  # finish hex
-  # input_data.append([age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering])
-  input_data.append([age, eventType, science, compSci, writing, publicSpeaking, math, engineering])
-
-  min_per = 1
-  min_per = average + random.randint(-2, 2)
-  if age > 15:
-    min_per += age - 15
-  if science + compSci + writing + math + publicSpeaking + engineering >= 10:
-    min_per += 3
-  
-  if eventType == 1 and science == 2:
-    min_per += 1
-
-  if eventType == 2 and compSci == 2:
-    min_per += 1
-
-  if eventType == 3 and writing == 2:
-    min_per += 1
-  
-  if eventType == 4 and publicSpeaking == 2:
-    min_per += 1
-  
-  if eventType == 5 and math == 2:
-    min_per += 1
-  
-  if eventType == 6 and engineering == 2:
-    min_per += 1
-
-  if min_per > 10:
-    min_per = 9
-    '''
-  if hrsReq > 10:
-    min_per -= random.randint(0, 1)
-
-  if hrsReq > 5:
-    min_per -= random.randint(0, 1)
-'''
-
-  performance = random.randint(min_per, 10)
-  if performance == 0:
-    performance = 1
-
-  # print(age, gender, average, eventType, hrsReq, race, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
-  # print(age, eventType, science, compSci, writing, publicSpeaking, math, engineering, " => ", performance)
-
-  output_data.append(performance)
-
-X, y = load_iris(return_X_y=True)
-
-X_train, X_test, y_train, y_test = train_test_split(input_data, output_data, test_size=0.2, random_state=0)
-
-model = linear_model.LinearRegression()
-model.fit(X_train, y_train)
-print(f"{model.score(X_test, y_test)}")
-
-model2 = make_pipeline(PolynomialFeatures(2), Ridge())
-model2.fit(X_train, y_train)
-print(f"{model2.score(X_test, y_test)}")
-
-
-model3 = svm.SVC()
-model3.fit(X_train, y_train)
-print(f"")
-
-
-model4 = RandomForestClassifier(n_estimators=30, max_depth=30)
-model4.fit(X_train, y_train)
-print(f"{model4.score(X_test, y_test)}")
-
-
-model5 = KNeighborsClassifier(n_neighbors=3)
-model5.fit(X_train, y_train)
-print(f"{model5.score(X_test, y_test)}")
-
-model6 = GaussianNB()
-model6.fit(X_train, y_train)
-print(f"{model6.score(X_test, y_test)}")
-
-
-model7 = BaggingClassifier(RandomForestClassifier(), max_samples=0.5, max_features=0.5)
-model7.fit(X_train, y_train)
-print(f"{model7.score(X_test, y_test)}")
-```
+##
 
 
